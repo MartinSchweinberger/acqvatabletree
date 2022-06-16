@@ -15,7 +15,7 @@ link-citations: yes
 knitr::include_graphics("https://slcladal.github.io/images/acqvalab.png")
 ```
 
-The materials for this workshop are available [here](https://martinschweinberger.github.io/acqvatabletree/).
+The materials for this workshop are available [here](https://github.com/MartinSchweinberger/acqvatabletree). In addition, the rendered tutorial is available [here](https://martinschweinberger.github.io/acqvatabletree/).
 
 ## Timeline {-}
 
