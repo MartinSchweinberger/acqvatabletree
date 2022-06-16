@@ -745,7 +745,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <span id="cb46-8"><a href="tree-based-models.html#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="fu">somers2</span>(rfmodel1_pred, <span class="fu">as.numeric</span>(rfdata<span class="sc">$</span>SUFlike))</span></code></pre></div>
 <pre><code>##            C          Dxy            n      Missing 
 ##    0.7112131    0.4224262 2000.0000000    0.0000000</code></pre>
-<p>The model parameters are excellent: remember that if the C-value is 0.5, the predictions are random, while the predictions are perfect if the C-value is 1. C-values above 0.8 indicate real predictive capacity <span class="citation">(<a href="#ref-baayen2008analyzing" role="doc-biblioref">Baayen 2008, 204</a>)</span>. Somers’ D<sub>xy</sub> is a value that represents a rank correlation between predicted probabilities and observed responses. Somers’ D<sub>xy</sub> values range between 0, which indicates complete randomness, and 1, which indicates perfect prediction <span class="citation">(<a href="#ref-baayen2008analyzing" role="doc-biblioref">Baayen 2008, 204</a>)</span>.</p>
+<p>The model parameters are good but not excellent: remember that if the C-value is 0.5, the predictions are random, while the predictions are perfect if the C-value is 1. C-values above 0.8 indicate real predictive capacity <span class="citation">(<a href="#ref-baayen2008analyzing" role="doc-biblioref">Baayen 2008, 204</a>)</span>. Somers’ D<sub>xy</sub> is a value that represents a rank correlation between predicted probabilities and observed responses. Somers’ D<sub>xy</sub> values range between 0, which indicates complete randomness, and 1, which indicates perfect prediction <span class="citation">(<a href="#ref-baayen2008analyzing" role="doc-biblioref">Baayen 2008, 204</a>)</span>.</p>
 <p>In a next step, we extract the variable importance <code>conditional=T</code> adjusts for correlations between predictors).</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="tree-based-models.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract variable importance based on mean decrease in accuracy</span></span>
 <span id="cb48-2"><a href="tree-based-models.html#cb48-2" aria-hidden="true" tabindex="-1"></a>rfmodel1_varimp <span class="ot">&lt;-</span> <span class="fu">varimp</span>(rfmodel1, <span class="at">conditional =</span> T) </span>
@@ -753,7 +753,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <span id="cb48-4"><a href="tree-based-models.html#cb48-4" aria-hidden="true" tabindex="-1"></a>rfmodel1_varimp</span></code></pre></div>
 <pre><code>##           Gender              Age ConversationType          Priming 
 ##      0.003770260      0.000542920      0.002520164      0.022095496</code></pre>
-<p>We can also calculate more robust variable importance using the <code>varimpAUC</code> function from the <code>party</code> package which calculates importance statistics that are corrected towards class imbalance, i.e. differences in the number of instances per category. The variable importance is easily visualized using the <code>dotplot</code> function from base R.</p>
+<p>We can also calculate more robust variable importance using the <code>varimpAUC</code> function from the <code>party</code> package which calculates importance statistics that are corrected towards class imbalance, i.e., differences in the number of instances per category. The variable importance is easily visualized using the <code>dotplot</code> function from base R.</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="tree-based-models.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract more robust variable importance </span></span>
 <span id="cb50-2"><a href="tree-based-models.html#cb50-2" aria-hidden="true" tabindex="-1"></a>rfmodel1_robustvarimp <span class="ot">&lt;-</span> party<span class="sc">::</span><span class="fu">varimp</span>(rfmodel1)  </span>
 <span id="cb50-3"><a href="tree-based-models.html#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plot result</span></span>
@@ -764,15 +764,12 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <p>A few words on the parameters of the <code>randomForest</code> function: if the thing we’re trying to predict is a numeric variable, the <code>randomForest</code> function will set <code>mtry</code> (the number of variables considered at each step) to the total number of variables divided by 3 (rounded down), or to 1 if the division results in a value less than 1. If the thing we’re trying to predict is a “factor” (i.e. either “yes/no” or “ranked”), then <code>randomForest()</code> will set <code>mtry</code> to the square root of the number of variables (rounded down to the next integer value).Again, we start by setting a seed to store random numbers and thus make results reproducible.</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="tree-based-models.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set.seed</span></span>
 <span id="cb51-2"><a href="tree-based-models.html#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2019120205</span>)</span>
-<span id="cb51-3"><a href="tree-based-models.html#cb51-3" aria-hidden="true" tabindex="-1"></a>rfmodel2 <span class="ot">&lt;-</span> randomForest<span class="sc">::</span><span class="fu">randomForest</span>(SUFlike <span class="sc">~</span> ., </span>
-<span id="cb51-4"><a href="tree-based-models.html#cb51-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">data=</span>rfdata, </span>
-<span id="cb51-5"><a href="tree-based-models.html#cb51-5" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">mtry =</span> <span class="dv">2</span>,</span>
-<span id="cb51-6"><a href="tree-based-models.html#cb51-6" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">proximity=</span><span class="cn">TRUE</span>)</span>
-<span id="cb51-7"><a href="tree-based-models.html#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect model</span></span>
-<span id="cb51-8"><a href="tree-based-models.html#cb51-8" aria-hidden="true" tabindex="-1"></a>rfmodel2 </span></code></pre></div>
+<span id="cb51-3"><a href="tree-based-models.html#cb51-3" aria-hidden="true" tabindex="-1"></a>rfmodel2 <span class="ot">&lt;-</span> randomForest<span class="sc">::</span><span class="fu">randomForest</span>(SUFlike <span class="sc">~</span> ., <span class="at">data=</span>rfdata, <span class="at">mtry =</span> <span class="dv">2</span>)</span>
+<span id="cb51-4"><a href="tree-based-models.html#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect model</span></span>
+<span id="cb51-5"><a href="tree-based-models.html#cb51-5" aria-hidden="true" tabindex="-1"></a>rfmodel2 </span></code></pre></div>
 <pre><code>## 
 ## Call:
-##  randomForest(formula = SUFlike ~ ., data = rfdata, mtry = 2,      proximity = TRUE) 
+##  randomForest(formula = SUFlike ~ ., data = rfdata, mtry = 2) 
 ##                Type of random forest: regression
 ##                      Number of trees: 500
 ## No. of variables tried at each split: 2
@@ -859,7 +856,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <li><p>In the next step, it is checked at each iteration of the process whether a real predictor has a higher importance compared with the best shadow feature. The algorithm keeps track of the performance of the original variables by storing whether they outperformed the best shadow feature or not in a vector.</p></li>
 <li><p>In the fifth step, predictors that did not outperform the best shadow feature are removed and the process continues without them. After a set number of iterations, or if all the variables have been either confirmed as outperforming the best shadow feature, the algorithm stops.</p></li>
 </ul>
-<p>Despite its obvious advantages of Boruta over random forest analyses and regression modeling, it can neither handle multicollinearity not hierarchical data structures where data points are nested or grouped by a given predictor (as is the case in the present analysis as data points are grouped by adjective type). As Boruta is a variable selection procedure, it is also limited in the sense that it provides information on which predictors to include and how good these predictors are (compared to the shadow variables) while it is neither able to take hierarchical data structure into account, nor does it provide information about how one level of a factor compares to other factors. In other words, Boruta shows that a predictor is relevant and how strong it is but it does not provide information on how the likelihood of an outcome being used differs between variable levels, for instance between men and women.</p>
+<p>Despite its obvious advantages of Boruta over random forest analyses and regression modeling, it can not handle hierarchical data structures where data points are nested or grouped by a given predictor (as is the case in the present analysis as data points are grouped by adjective type). As Boruta is a variable selection procedure, it is also limited in the sense that it provides information on which predictors to include and how good these predictors are (compared to the shadow variables) while it is neither able to take hierarchical data structure into account, nor does it provide information about how one level of a factor compares to other factors. In other words, Boruta shows that a predictor is relevant and how strong it is but it does not provide information on how the likelihood of an outcome being used differs between variable levels, for instance between men and women.</p>
 </div>
 <div id="boruta-in-r" class="section level3 hasAnchor" number="3.7.1">
 <h3><span class="header-section-number">3.7.1</span> Boruta in R<a href="tree-based-models.html#boruta-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -951,7 +948,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <span id="cb63-3"><a href="tree-based-models.html#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="co"># initial run</span></span>
 <span id="cb63-4"><a href="tree-based-models.html#cb63-4" aria-hidden="true" tabindex="-1"></a>boruta1 <span class="ot">&lt;-</span> <span class="fu">Boruta</span>(really<span class="sc">~</span>.,<span class="at">data=</span>borutadata)</span>
 <span id="cb63-5"><a href="tree-based-models.html#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(boruta1)</span></code></pre></div>
-<pre><code>## Boruta performed 99 iterations in 7.389485 secs.
+<pre><code>## Boruta performed 99 iterations in 2.918219 secs.
 ##  8 attributes confirmed important: Adjective, AudienceSize,
 ## ConversationType, Emotionality, FileSpeaker and 3 more;
 ##  5 attributes confirmed unimportant: Age, Gender, Gradabilty,
@@ -961,7 +958,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <span id="cb65-2"><a href="tree-based-models.html#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">getConfirmedFormula</span>(boruta1)</span></code></pre></div>
 <pre><code>## really ~ Adjective + FileSpeaker + Function + ConversationType + 
 ##     AudienceSize + very + Freq + Emotionality
-## &lt;environment: 0x0000023d48c6a240&gt;</code></pre>
+## &lt;environment: 0x000002851c343760&gt;</code></pre>
 <p>In a next step, we inspect the history to check if any of the variables shows drastic fluctuations in their importance assessment.</p>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="tree-based-models.html#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotImpHistory</span>(boruta1)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/bo5-1.png" width="672" /></p>
@@ -976,7 +973,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <span id="cb68-8"><a href="tree-based-models.html#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2nd run</span></span>
 <span id="cb68-9"><a href="tree-based-models.html#cb68-9" aria-hidden="true" tabindex="-1"></a>boruta2 <span class="ot">&lt;-</span> <span class="fu">Boruta</span>(really<span class="sc">~</span>.,<span class="at">data=</span>borutadata)</span>
 <span id="cb68-10"><a href="tree-based-models.html#cb68-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(boruta2)</span></code></pre></div>
-<pre><code>## Boruta performed 99 iterations in 7.06097 secs.
+<pre><code>## Boruta performed 99 iterations in 2.845209 secs.
 ##  8 attributes confirmed important: Adjective, AudienceSize,
 ## ConversationType, Emotionality, FileSpeaker and 3 more;
 ##  No attributes deemed unimportant.
@@ -985,7 +982,7 @@ G_{split18.5} = \frac{1} {6} \times 0.0 +  \frac{5} {6} \times 0.48 = 0.4
 <span id="cb70-2"><a href="tree-based-models.html#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">getConfirmedFormula</span>(boruta2)</span></code></pre></div>
 <pre><code>## really ~ Adjective + FileSpeaker + Function + ConversationType + 
 ##     AudienceSize + very + Freq + Emotionality
-## &lt;environment: 0x0000023d4be2f770&gt;</code></pre>
+## &lt;environment: 0x000002851b7bce70&gt;</code></pre>
 <p>Only adjective frequency and adjective type are confirmed as being important while all other variables are considered tentative. However, no more variables need to be removed as all remaining variables are not considered unimportant. In a last step, we visualize the results of the Boruta analysis.</p>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="tree-based-models.html#cb72-1" aria-hidden="true" tabindex="-1"></a>borutadf <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(boruta2<span class="sc">$</span>ImpHistory) <span class="sc">%&gt;%</span></span>
 <span id="cb72-2"><a href="tree-based-models.html#cb72-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">gather</span>(Variable, Importance, Adjective<span class="sc">:</span>shadowMin) <span class="sc">%&gt;%</span></span>

@@ -598,7 +598,7 @@ rfmodel1_pred <- unlist(party::treeresponse(rfmodel1))#[c(FALSE,TRUE)]
 somers2(rfmodel1_pred, as.numeric(rfdata$SUFlike))
 ```
 
-The model parameters are excellent: remember that if the C-value is 0.5, the predictions are random, while the predictions are perfect if the C-value is 1. C-values above 0.8 indicate real predictive capacity [@baayen2008analyzing 204]. Somers’ D~xy~ is a value that represents a rank correlation between predicted probabilities and observed responses. Somers’ D~xy~ values range between 0, which indicates complete randomness, and 1, which indicates perfect prediction [@baayen2008analyzing 204].
+The model parameters are good but not excellent: remember that if the C-value is 0.5, the predictions are random, while the predictions are perfect if the C-value is 1. C-values above 0.8 indicate real predictive capacity [@baayen2008analyzing 204]. Somers’ D~xy~ is a value that represents a rank correlation between predicted probabilities and observed responses. Somers’ D~xy~ values range between 0, which indicates complete randomness, and 1, which indicates perfect prediction [@baayen2008analyzing 204].
 
 In a next step, we extract the variable importance `conditional=T` adjusts for correlations between predictors).
 
@@ -609,7 +609,7 @@ rfmodel1_varimp <- varimp(rfmodel1, conditional = T)
 rfmodel1_varimp
 ```
 
-We can also calculate more robust variable importance using the `varimpAUC` function from the `party` package which calculates importance statistics that are corrected towards class imbalance, i.e.  differences in the number of instances per category. The variable importance is easily visualized using the `dotplot` function from base R.
+We can also calculate more robust variable importance using the `varimpAUC` function from the `party` package which calculates importance statistics that are corrected towards class imbalance, i.e.,  differences in the number of instances per category. The variable importance is easily visualized using the `dotplot` function from base R.
 
 ```{r rf8, message=FALSE, warning=FALSE}
 # extract more robust variable importance 
@@ -627,10 +627,7 @@ A few words on the parameters of the `randomForest` function: if the thing we're
 ```{r rf9, message=FALSE, warning=FALSE}
 # set.seed
 set.seed(2019120205)
-rfmodel2 <- randomForest::randomForest(SUFlike ~ ., 
-                                       data=rfdata, 
-                                       mtry = 2,
-                                       proximity=TRUE)
+rfmodel2 <- randomForest::randomForest(SUFlike ~ ., data=rfdata, mtry = 2)
 # inspect model
 rfmodel2 
 ```
@@ -701,7 +698,7 @@ The Boruta procedure consists out of five steps.
 
 * In the fifth step, predictors that did not outperform the best shadow feature are removed and the process continues without them. After a set number of iterations, or if all the variables have been either confirmed as outperforming the best shadow feature, the algorithm stops. 
 
-Despite its obvious advantages of Boruta over random forest analyses and regression modeling, it can neither handle multicollinearity not hierarchical data structures where data points are nested or grouped by a given predictor (as is the case in the present analysis as data points are grouped by adjective type). As Boruta is a variable selection procedure, it is also limited in the sense that it provides information on which predictors to include and how good these predictors are (compared to the shadow variables) while it is neither able to take hierarchical data structure into account, nor does it provide information about how one level of a factor compares to other factors. In other words, Boruta shows that a predictor is relevant and how strong it is but it does not provide information on how the likelihood of an outcome being used differs between variable levels, for instance between men and women. 
+Despite its obvious advantages of Boruta over random forest analyses and regression modeling, it can not handle hierarchical data structures where data points are nested or grouped by a given predictor (as is the case in the present analysis as data points are grouped by adjective type). As Boruta is a variable selection procedure, it is also limited in the sense that it provides information on which predictors to include and how good these predictors are (compared to the shadow variables) while it is neither able to take hierarchical data structure into account, nor does it provide information about how one level of a factor compares to other factors. In other words, Boruta shows that a predictor is relevant and how strong it is but it does not provide information on how the likelihood of an outcome being used differs between variable levels, for instance between men and women. 
 
 ### Boruta in R
 
