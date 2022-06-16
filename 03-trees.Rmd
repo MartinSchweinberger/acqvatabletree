@@ -32,13 +32,13 @@ Several advantages have been associated with using tree-based models:
 
 Despite these potential advantages, a word of warning is in order: @gries2021statistics admits that tree-based models can be very useful but there are some issues that but some serious short-comings of tree-structure models remain under-explored. For instance, 
 
-1. Forest-models (Random Forests and Boruta) only inform about the **importance** of a variable but not if the variable is important as a main effect or as part of interactions (or both)! The importance only shows that there is some important connection between the predictor and the dependent variable. While partial dependence plots offer a remedy for this shortcoming to a certain degree, regression models are still much better at dealing with this issue. 
+1. Forest-models (Random Forests and Boruta) only inform about the **importance** of a variable but not if the variable is important as a main effect or as part of interactions (or both)! The importance only shows that there is some important connection between the predictor and the dependent variable. While partial dependence plots (see [here](https://christophm.github.io/interpretable-ml-book/pdp.html) for more information) offer a remedy for this shortcoming to a certain degree, regression models are still much better at dealing with this issue. 
 
 2. Simple tree-structure models have been shown to fail in detecting the correct predictors if the variance is solely determined by a **single interaction** [@gries2021statistics, chapter 7.3]. This failure is caused by the fact that the predictor used in the first split of a tree is selected as the one with the strongest main effect [@boulesteix2015interaction, 344]. This issue can, however, be avoided by hard-coding the interactions as predictors plus using ensemble methods such as random forests rather than individual trees [see @gries2021statistics, chapter 7.3]. 
 
 3. Another shortcoming is that tree-structure models partition the data (rather than "fitting a line" through the data which can lead to more **coarse-grained predictions** compared to regression models when dealing with numeric dependent variables [again, see @gries2021statistics, chapter 7.3]. 
 
-4. @boulesteix2015interaction, 341 state that high correlations between predictors can hinder the **detection of interactions** when using small data sets. However, regression do not fare better here as they are even more strongly affected by (multi-)collinearity (see @@gries2021statistics, chapter 7.3).
+4. @boulesteix2015interaction[341] state that high correlations between predictors can hinder the **detection of interactions** when using small data sets. However, regression do not fare better here as they are even more strongly affected by (multi-)collinearity [see @gries2021statistics, chapter 7.3].
 
 5. Tree-structure models are bad a detecting interactions when the variables have **strong main effects** which is, unfortunately, common when dealing with linguistic data [@wrigt2016interac].
 
@@ -144,7 +144,7 @@ head(citdata, 10)
 
 
 
-The data now consists of factors which two levels each. 
+The data now consists of factors with two levels each. 
 
 The first step in generating a decision tree consists in determining, what the root of the decision tree should be. This means that we have to determine which of the variables represents the root node. In order to do so, we tabulate for each variable level, how many speakers of that level have used discourse *like* (LikeUsers) and how many have not used discourse *like* (NonLikeUsers).
 
@@ -313,7 +313,7 @@ We would continue to calculate the gini values and always split at the lowest gi
 
 In addition to plotting the decision tree, we can also check its accuracy. To do so, we predict the use of *like* based on the decision tree and compare them to the observed uses of *like*. Then we use the `confusionMatrix` function from the `caret` package to get an overview of the accuracy statistics.
 
-```{r cit24, eval = F, echo=T, message=FALSE, warning=FALSE}
+```{r cit24, message=FALSE, warning=FALSE}
 dtreeprediction <- as.factor(ifelse(predict(dtree)[,2] > .5, "yes", "no"))
 confusionMatrix(dtreeprediction, citdata$LikeUser)
 ```
@@ -342,9 +342,7 @@ In a first step, we order the numeric variable so that we arrive at the followin
 citdata2 <- citdata2 %>%
   arrange(Age)
 # inspect data
-citdata2 %>%
-  as.data.frame() %>%
-  head(10)
+head(citdata2, 10)
 ```
 
 Next, we calculate the means for each level of "Age".
@@ -354,9 +352,7 @@ Age <- c(15, ((15+22)/2), 22, ((22+27)/2), 27, ((27+37)/2), 37, ((37+42)/2), 42,
 LikeUser <- c("yes", "", "yes", "", "yes", "", "no", "", "yes", "", "no")
 citdata3 <- data.frame(Age, LikeUser)
 # inspect data
-citdata3 %>%
-  as.data.frame() %>%
-  head(10)
+head(citdata3, 10)
 ```
 
 Now, we calculate the Gini values for each average level of age. How this is done is shown below for the first split.
@@ -423,13 +419,8 @@ We then have to calculate the gini values for all possible age splits which yiel
 AgeSplit <- c(((15+22)/2), ((22+27)/2), ((27+37)/2), ((37+42)/2), ((42+63)/2))
 Gini <- c(0.4, 0.5,0.444, 0.41, 0.267)
 citdata3 <- data.frame(AgeSplit, Gini)
-```
-
-```{r tb3, echo = F, warning=F, message=F}
 # inspect data
-citdata3 %>%
-  as.data.frame() %>%
-  head(10)
+head(citdata3, 10)
 ```
 
 The split at 52.5 years of age has the lowest Gini value. Accordingly, we would split the data between speakers who are younger than 52.5 and speakers who are older than 52.5 years of age. The lowest Gini value for any age split would also be the Gini value that would be compared to other variables. 
@@ -447,7 +438,7 @@ When dealing with categorical variables with more than two levels, the situation
 Conditional Inference Trees (CITs) are much better at determining the *true* effect of a predictor, i.e. the effect of a predictor if all other effects are simultaneously considered. In contrast to CARTs, CITs use p-values to determine splits in the data. Below is a conditional inference tree which shows how and what factors contribute to the use of discourse *like*. In conditional inference trees predictors are only included if the predictor is significant (i.e. if these predictors are necessary). 
 
 ```{r cit1b, message=FALSE, warning=FALSE}
-citdata <- read.delim("https://slcladal.github.io/data/treedata.txt", header = T, sep = "\t")
+citdata <- read.delim(here::here("data", "treedat.txt"), header = T, sep = "\t")
 set.seed(111)        # set.seed
 # apply bonferroni correction (1 minus alpha multiplied by n of predictors)
 control = ctree_control(mincriterion = 1-(.05*ncol(citdata)-1))
@@ -632,7 +623,7 @@ In our case, the data does not contain missing values. Random Forests offer a ve
 data.imputed <- rfImpute(SUFlike ~ ., data = rfdata, iter=6)
 ```
 
-The argument `iter` refers to the number of iterations to run. According to [@breiman2001random], 4 to 6 iterations is usually good enough. With this data set (if it had NAs) and when we were to execute the code, the resulting OOB-error rates lie somewhere around 17 and 18 percent. When we were to set `iter` to 20, we get values a little better and a little worse, so doing more iterations doesn't improve the situation.
+The argument `iter` refers to the number of iterations to run. According to @breiman2001random[pp. 4 - 6]  iterations is usually good enough. With this data set (if it had NAs) and when we were to execute the code, the resulting OOB-error rates lie somewhere around 17 and 18 percent. When we were to set `iter` to 20, we get values a little better and a little worse, so doing more iterations doesn't improve the situation.
 
 Also, if you want to customize the `rfImpute` function, you can change the number of trees it uses (the default is 300) and the number of variables that it will consider at each step.
 
@@ -738,8 +729,7 @@ rfmodel3 %>%  # the %>% operator is read as "and then"
   partial(pred.var = "Age") %>%
   autoplot(smooth = TRUE, ylab = expression(f(Age))) +
   theme_light() +
-  ggtitle("Partial Depencence Plot: Age") + 
-  ylim(-20, 0)
+  ggtitle("Partial Depencence Plot: Age")
 ```
 
 You can however use the `partial` function to show how the effect of predictors interacts with other predictors (see below). 
