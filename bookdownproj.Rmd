@@ -1,3 +1,52 @@
+--- 
+title: "AcqVA Aurora Workshop: From Tables to Trees"
+author: "Martin Schweinberger"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: ["book.bib", "packages.bib"]
+biblio-style: apalike
+link-citations: yes
+---
+
+# General Information
+
+Placeholder
+
+
+## Timeline {-}
+
+<!--chapter:end:index.Rmd-->
+
+
+# Working with Tables
+
+Placeholder
+
+
+## Preparation and session set up
+## Getting started
+## Loading tables into R
+### Excercise Time! {-}
+## Inspecting tables
+### Excercise Time! {-}
+## Processing tabular data
+## Piping
+## Selecting and filtering
+### Excercise Time! {-}
+## Changing data and adding columns
+## Renaming columns
+### Excercise Time! {-}
+## Grouping and summarising
+### Excercise Time! {-}
+## Gathering and Spreading
+### Excercise Time! {-}
+## Saving tables on your computer 
+### Excercise Time! {-}
+## Outro
+
+<!--chapter:end:02-tables.Rmd-->
+
 
 # Tree-Based Models
 
@@ -1033,4 +1082,7 @@ sessionInfo()
 # References
 
 
+
+
+<!--chapter:end:03-trees.Rmd-->
 
