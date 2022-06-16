@@ -11,17 +11,17 @@ site: bookdown::bookdown_site
 knitr::include_graphics("https://slcladal.github.io/images/acqvalab.png")
 ```
 
-The materials for this workshop are available at https://martinschweinberger.github.io/acqvatabletree/
+The materials for this workshop are available [here](https://martinschweinberger.github.io/acqvatabletree/).
 
 ## Timeline
 
-**Part 1: Working with tables in R (10-11:30)**
+**Part 1: Working with tables in R (10-12:00)**
 
-Break (11:30 - 12:30)
+Break (12:00 - 13:00)
 
-**Part 2: Tree-based models (12:30-14:00)**
+**Part 2: Tree-based models (13:00-14:30)**
 
 This workshop consists of two parts and it is aimed at beginners and intermediate users of R.
 
-Part 1 showcases how to work with and process tabulated data (tables) using R. 
+Part 1 showcases how to work with and process tabulated data (tables) using R and part 2 focuses on tree-based methods. Part 1 is decidedly practical while part 2 is more focused on discussing the advantages and disadvantages of these methods (while also showing how they can be implemented). 
 
