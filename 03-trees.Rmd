@@ -459,41 +459,10 @@ The easiest and most common way to visualize CITs is to simply use the `plot` fu
 To generate this customized CIT, we activate the `ggparty` package and extract the significant p-values from the CIT object. We then plot the CIT and define the nodes, edges, and text elements as shown below. 
 
 
-```{r pretty, warning=F, message=F}
+```{r plotctree, warning=F, message=F}
 # extract p-values
 pvals <- unlist(nodeapply(citd.ctree, ids = nodeids(citd.ctree), function(n) info_node(n)$p.value))
 pvals <- pvals[pvals <.05]
-# plotting
-ggparty(citd.ctree) +
-  geom_edge() +
-  geom_edge_label() +
-  geom_node_label(line_list = list(aes(label = splitvar),
-                                   aes(label = paste0("N=", nodesize, ", p", 
-                                                      ifelse(pvals < .001, "<.001", paste0("=", round(pvals, 3)))), 
-                                       size = 10)),
-                  line_gpar = list(list(size = 13), 
-                                   list(size = 10)), 
-                  ids = "inner") +
-  geom_node_label(aes(label = paste0("Node ", id, ", N = ", nodesize)),
-    ids = "terminal", nudge_y = -0.0, nudge_x = 0.01) +
-  geom_node_plot(gglist = list(
-    geom_bar(aes(x = "", fill = LikeUser),
-             position = position_fill(), color = "black"),
-      theme_minimal(),
-      scale_fill_manual(values = c("gray50", "gray80"), guide = FALSE),
-      scale_y_continuous(breaks = c(0, 1)),
-    xlab(""), 
-    ylab("Probability"),
-    geom_text(aes(x = "", group = LikeUser,
-                  label = stat(count)),
-              stat = "count", position = position_fill(), vjust = 1.1)),
-    shared_axis_labels = TRUE)
-```
-
-
-We can also use `position_dodge` (instead of `position_fill`) to display frequencies rather than probabilities as shown below. 
-
-```{r plotctree, warning=F, message=F}
 # plotting
 ggparty(citd.ctree) +
   geom_edge() +
@@ -527,7 +496,7 @@ ggparty(citd.ctree) +
 
 ### Problems of Conditional Inference Trees  {-}
 
-Like other tree-based methods, CITs are very intuitive, multivariate, non-parametric, they do not require large data sets, and they are easy to implement. Despite these obvious advantages, they have at least one major short coming compared to other, more sophisticated tree-structure models (in addition to the general issues that tree-structure models exhibit as discussed in the section [Tree-Structure Model Basics](#tree-structuremodelbasics)): they are prone to overfitting which means that they fit the observed data very well but preform much worse when being applied to new data.
+Like other tree-based methods, CITs are very intuitive, multivariate, non-parametric, they do not require large data sets, and they are easy to implement. Despite these obvious advantages, they have at least one major short coming compared to other, more sophisticated tree-structure models (in addition to the general issues that tree-structure models exhibit as discussed above: they are prone to **overfitting** which means that they fit the observed data very well but preform much worse when being applied to new data.
 
 An extension which remedies this problem is to use a so-called ensemble method which grows many varied trees. The most common ensemble method is called a *Random Forest Analysis* and will have a look at how Random Forests work and how to implement them in R in the next section. 
 
@@ -616,17 +585,6 @@ natest <- rfdata %>%
 nrow(natest) # no NAs present in data (same number of rows with NAs omitted)
 ```
 
-In our case, the data does not contain missing values. Random Forests offer a very nice way to deal with missing data though. If NAs are present, they can either be deleted OR their values for any missing values can be imputed using proximities. In this way, such data points do not have to be removed which can be problematic especially when dealing with relatively small data sets. For imputing values, you could run the code below but as our data does not have NAs, we will skip this step and just show it here so you can have a look at how it is done.
-
-```{r rf5, echo=T, eval = F, message=FALSE, warning=FALSE}
-# replacing NAs with estimates
-data.imputed <- rfImpute(SUFlike ~ ., data = rfdata, iter=6)
-```
-
-The argument `iter` refers to the number of iterations to run. According to @breiman2001random[pp. 4 - 6]  iterations is usually good enough. With this data set (if it had NAs) and when we were to execute the code, the resulting OOB-error rates lie somewhere around 17 and 18 percent. When we were to set `iter` to 20, we get values a little better and a little worse, so doing more iterations doesn't improve the situation.
-
-Also, if you want to customize the `rfImpute` function, you can change the number of trees it uses (the default is 300) and the number of variables that it will consider at each step.
-
 We will now generate a first random forest object and inspect its model fit. As random forests rely on re-sampling, we set a seed so that we arrive at the same estimations.
 
 ```{r rf6, message=FALSE, warning=FALSE}
@@ -642,7 +600,7 @@ somers2(rfmodel1_pred, as.numeric(rfdata$SUFlike))
 
 The model parameters are excellent: remember that if the C-value is 0.5, the predictions are random, while the predictions are perfect if the C-value is 1. C-values above 0.8 indicate real predictive capacity [@baayen2008analyzing 204]. Somers’ D~xy~ is a value that represents a rank correlation between predicted probabilities and observed responses. Somers’ D~xy~ values range between 0, which indicates complete randomness, and 1, which indicates perfect prediction [@baayen2008analyzing 204].
 
-In a next step, we extract the variable importance (conditional=T adjusts for correlations between predictors).
+In a next step, we extract the variable importance `conditional=T` adjusts for correlations between predictors).
 
 ```{r rf7, message=FALSE, warning=FALSE}
 # extract variable importance based on mean decrease in accuracy
@@ -683,7 +641,7 @@ The output tells us that the model explains less than 15 percent of the variance
 # set.seed (to store random numbers and thus make results reproducible)
 set.seed(2019120206)
 # create a new model with fewer trees and that takes 2 variables at a time
-rfmodel3 <- randomForest(SUFlike ~ ., data=rfdata, ntree=30, mtry = 4, proximity=TRUE)
+rfmodel3 <- randomForest(SUFlike ~ ., data=rfdata, ntree=30, mtry = 4)
 # inspect model
 rfmodel3
 ```
@@ -707,32 +665,7 @@ Unfortunately, we cannot easily compute robust variable importance for RF models
 varImpPlot(rfmodel3, main = "", pch = 20)
 ```
 
-Here is an alternative way of plotting variable importance using the `vip` function from the `vip` package.
-
-```{r rf16, message=FALSE, warning=FALSE}
-# generate vip plot
-vip::vip(rfmodel3, geom = "point", horizontal = FALSE)
-```
-
-Using the `vip` package, you can also generate variable importance barplots.
-
-```{r rf17, message=FALSE, warning=FALSE}
-# generate vip plot
-vip::vip(rfmodel3, horizontal = FALSE)
-```
-
-A second type of visualization that can provide insights in the `partial` function from the `pdp` package which shows the effects of individual predictors - but remember that this still does not provide information about the way that the predictor interacts with other predictors.
-
-```{r rf18, message=FALSE, warning=FALSE}
-# extract importance of individual variables
-rfmodel3 %>%  # the %>% operator is read as "and then"
-  partial(pred.var = "Age") %>%
-  autoplot(smooth = TRUE, ylab = expression(f(Age))) +
-  theme_light() +
-  ggtitle("Partial Depencence Plot: Age")
-```
-
-You can however use the `partial` function to show how the effect of predictors interacts with other predictors (see below). 
+A second type of visualization that can provide insights in the `partial` function from the `pdp` package to show how the effect of predictors interacts with other predictors (see below). 
 
 ```{r rf19, message=F, warning=F}
 partial(rfmodel3, pred.var = c("Age", "Gender"), plot = TRUE, plot.engine = "ggplot2")

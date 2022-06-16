@@ -56,7 +56,7 @@ There are several different functions that allow us to read tabulated data into 
 
 ```{r lt1, message=FALSE, warning=FALSE}
 # load data with read.delim
-mytable <- base::readRDS(here::here("data", "myrda.rda"))
+mytable <- base::readRDS(here::here("data", "rdadat.rda"))
 # inspect
 head(mytable) 
 ```
