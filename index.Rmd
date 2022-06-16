@@ -1,9 +1,27 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAME HERE"
+title: "AcqVA Aurora Workshop: From Tables to Trees"
+author: "Martin Schweinberger"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
 
-# Down the rabbit-hole
+# General Information
+
+```{r acqvalab1, echo=F, fig.cap="", message=FALSE, warning=FALSE, out.width='100%'}
+knitr::include_graphics("https://slcladal.github.io/images/acqvalab.png")
+```
+
+The materials for this workshop are available at https://martinschweinberger.github.io/acqvatabletree/
+
+## Timeline
+
+**Part 1: Working with tables in R (10-11:30)**
+
+Break (11:30 - 12:30)
+
+**Part 2: Tree-based models (12:30-14:00)**
+
+This workshop consists of two parts and it is aimed at beginners and intermediate users of R.
+
+Part 1 showcases how to work with and process tabulated data (tables) using R. 
 
